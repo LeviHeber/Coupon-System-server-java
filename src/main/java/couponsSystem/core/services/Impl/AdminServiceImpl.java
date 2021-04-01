@@ -1,12 +1,17 @@
 package couponsSystem.core.services.Impl;
 
 import java.util.ArrayList;
+
 import javax.transaction.Transactional;
+
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.annotation.Scope;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
+
 import couponsSystem.core.entites.Company;
 import couponsSystem.core.entites.Customer;
 import couponsSystem.core.exception.CouponsSystemException;
@@ -27,6 +32,7 @@ import couponsSystem.core.services.AdminService;
  */
 @Service
 @Transactional
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class AdminServiceImpl extends ClientServiceImpl implements AdminService, ApplicationContextAware {
 
 	private Environment env;
@@ -58,6 +64,7 @@ public class AdminServiceImpl extends ClientServiceImpl implements AdminService,
 	 *                                <li>add company failed.
 	 *                                <li>the company name or email already exists.
 	 */
+	@Override
 	public void addCompany(Company company) throws CouponsSystemException {
 		add(company, !companiesReposetory.existsByEmailOrName(company.getEmail(), company.getName()), "name or email");
 	}
@@ -72,8 +79,12 @@ public class AdminServiceImpl extends ClientServiceImpl implements AdminService,
 	 *                                <li>update company failed.
 	 *                                <li>the company dose not exists.
 	 */
+	@Override
 	public void updateCompany(Company company) throws CouponsSystemException {
 		Company companyDB = get(companiesReposetory.findById(company.getId()), "company");
+		if (company.getName() != companyDB.getName() && companiesReposetory.existsByName(company.getName())) {
+			throw new CouponsSystemException("the name already exists");
+		}
 		company.setId(companyDB.getId());
 		company.setEmail(companyDB.getEmail());
 		update(company);
@@ -93,6 +104,7 @@ public class AdminServiceImpl extends ClientServiceImpl implements AdminService,
 	 *                                failed.
 	 *                                <li>the company dose not exists.
 	 */
+	@Override
 	public void deleteCompany(int companyID) throws CouponsSystemException {
 		delete(companiesReposetory, companyID, "company");
 	}
@@ -105,6 +117,7 @@ public class AdminServiceImpl extends ClientServiceImpl implements AdminService,
 	 *                                <li>get all companies failed.
 	 *                                <li>There are no companies to get.
 	 */
+	@Override
 	public ArrayList<Company> getAllCompanies() throws CouponsSystemException {
 		return getAll(companiesReposetory.findAll(), "companies");
 	}
@@ -119,6 +132,7 @@ public class AdminServiceImpl extends ClientServiceImpl implements AdminService,
 	 *                                <li>get company failed.
 	 *                                <li>the company ID dose not exists.
 	 */
+	@Override
 	public Company getCompany(int companyID) throws CouponsSystemException {
 		return get(companiesReposetory.findById(companyID), "company");
 	}
@@ -133,6 +147,7 @@ public class AdminServiceImpl extends ClientServiceImpl implements AdminService,
 	 *                                <li>add customer failed.
 	 *                                <li>the customer email already exists.
 	 */
+	@Override
 	public void addCustomer(Customer customer) throws CouponsSystemException {
 		add(customer, !customersReposetory.existsByEmail(customer.getEmail()), "email");
 	}
@@ -147,8 +162,12 @@ public class AdminServiceImpl extends ClientServiceImpl implements AdminService,
 	 *                                <li>update customer failed.
 	 *                                <li>the customer dose not exists.
 	 */
+	@Override
 	public void updateCustomer(Customer customer) throws CouponsSystemException {
-		customer.setId(get(customersReposetory.findById(customer.getId()), "customer").getId());
+		Customer customerDB = get(customersReposetory.findById(customer.getId()), "customer");
+		if (customer.getEmail() != customerDB.getEmail() && customersReposetory.existsByEmail(customer.getEmail())) {
+			throw new CouponsSystemException("the email already exists");
+		}
 		update(customer);
 	}
 
@@ -165,6 +184,7 @@ public class AdminServiceImpl extends ClientServiceImpl implements AdminService,
 	 *                                failed.
 	 *                                <li>the customer dose not exists.
 	 */
+	@Override
 	public void deleteCustomer(int customerID) throws CouponsSystemException {
 		delete(customersReposetory, customerID, "customer");
 	}
@@ -179,6 +199,7 @@ public class AdminServiceImpl extends ClientServiceImpl implements AdminService,
 	 *                                <li>get customer failed.
 	 *                                <li>the customer ID dose not exists.
 	 */
+	@Override
 	public Customer getCustomer(int customerID) throws CouponsSystemException {
 		return get(customersReposetory.findById(customerID), "customer");
 	}
@@ -191,6 +212,7 @@ public class AdminServiceImpl extends ClientServiceImpl implements AdminService,
 	 *                                <li>get all customers failed.
 	 *                                <li>There are no customers to get.
 	 */
+	@Override
 	public ArrayList<Customer> getAllCustomers() throws CouponsSystemException {
 		return getAll(customersReposetory.findAll(), "customers");
 	}

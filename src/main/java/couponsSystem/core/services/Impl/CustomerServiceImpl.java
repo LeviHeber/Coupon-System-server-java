@@ -6,6 +6,8 @@ import java.util.Optional;
 
 import javax.transaction.Transactional;
 
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import couponsSystem.core.entites.Coupon;
@@ -28,6 +30,7 @@ import couponsSystem.core.services.CustomerService;
  */
 @Service
 @Transactional
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class CustomerServiceImpl extends ClientServiceImpl implements CustomerService {
 
 	private int customerId;

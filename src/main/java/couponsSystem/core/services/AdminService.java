@@ -1,8 +1,7 @@
 package couponsSystem.core.services;
 
 import java.util.ArrayList;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.context.annotation.Scope;
+
 import couponsSystem.core.entites.Company;
 import couponsSystem.core.entites.Customer;
 import couponsSystem.core.exception.CouponsSystemException;
@@ -20,7 +19,6 @@ import couponsSystem.core.exception.CouponsSystemException;
  * @author Levi Heber
  *
  */
-@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public interface AdminService extends ClientService {
 
 	/**
@@ -145,4 +143,4 @@ public interface AdminService extends ClientService {
 	 *                                <li>There are no customers to get.
 	 */
 	ArrayList<Customer> getAllCustomers() throws CouponsSystemException;
-	}
+}

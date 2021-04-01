@@ -1,16 +1,13 @@
 package couponsSystem.core;
 
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.PropertySource;
+
 import couponsSystem.core.controllers.sessions.SessionContext;
-import couponsSystem.core.entites.Company;
-import couponsSystem.core.entites.Customer;
 import couponsSystem.core.filters.ClientFilter;
-import couponsSystem.core.services.AdminService;
 import couponsSystem.core.services.Impl.LoginServiceImpl.ClientType;
 import couponsSystem.core.test.Test;
 import springfox.documentation.builders.PathSelectors;
@@ -24,9 +21,8 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 public class AppConfig {
 
-
 	public static void main(String[] args) {
-		Test test =  SpringApplication.run(AppConfig.class, args).getBean(Test.class);
+		Test test = SpringApplication.run(AppConfig.class, args).getBean(Test.class);
 //		test.testAll();
 
 	}

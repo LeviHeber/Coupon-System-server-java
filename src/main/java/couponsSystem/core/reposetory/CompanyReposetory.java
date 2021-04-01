@@ -1,6 +1,7 @@
 package couponsSystem.core.reposetory;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+
 import couponsSystem.core.entites.Company;
 import couponsSystem.core.entites.Customer;
 
@@ -14,5 +15,7 @@ import couponsSystem.core.entites.Customer;
 public interface CompanyReposetory extends JpaRepository<Company, Integer>, ClientReposetory<Company> {
 
 	boolean existsByEmailOrName(String email, String name);
+
+	boolean existsByName(String name);
 
 }

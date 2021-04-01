@@ -2,9 +2,14 @@ package couponsSystem.core.services.Impl;
 
 import java.util.ArrayList;
 import java.util.Optional;
+
 import javax.transaction.Transactional;
+
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
+
 import couponsSystem.core.entites.Company;
 import couponsSystem.core.entites.Coupon;
 import couponsSystem.core.entites.Coupon.Category;
@@ -25,6 +30,7 @@ import couponsSystem.core.services.CompanyService;
  */
 @Service
 @Transactional
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class CompanyServiceImpl extends ClientServiceImpl implements CompanyService {
 
 	private int companyId;
@@ -67,6 +73,7 @@ public class CompanyServiceImpl extends ClientServiceImpl implements CompanyServ
 	 *                                date.
 	 *                                <li>add coupon faild.
 	 */
+	@Override
 	public void addCoupon(Coupon coupon) throws CouponsSystemException {
 		if (coupon.getEndDate().isBefore(coupon.getStartDate())) {
 			throw new CouponsSystemException("the coupon start date is before the end date");
@@ -90,15 +97,24 @@ public class CompanyServiceImpl extends ClientServiceImpl implements CompanyServ
 	 * @throws CouponsSystemException
 	 * @throws Exception
 	 */
+	@Override
 	public void updateCoupon(Coupon coupon) throws CouponsSystemException {
-		if (coupon.getCompany().getId() == companyId) {
-			Coupon couponDB = get(couponsReposetory.findById(coupon.getId()), "coupon");
-			coupon.setId(couponDB.getId());
-			coupon.setCompany(couponDB.getCompany());
-			update(coupon);
-		} else {
+		Coupon couponDB = get(couponsReposetory.findById(coupon.getId()), "coupon");
+		if (coupon.getEndDate().isBefore(coupon.getStartDate())) {
+			throw new CouponsSystemException("the coupon start date is before the end date");
+		}
+		Coupon coupon2 = new Coupon();
+		coupon2.setTitle(coupon.getTitle());
+		coupon2.setCompany(new Company(companyId));
+		if (coupon.getTitle() != couponDB.getTitle() && couponsReposetory.exists(Example.of(coupon2))) {
+			throw new CouponsSystemException("the coupon title already exists");
+		}
+		if (coupon.getCompany().getId() != companyId) {
 			throw new CouponsSystemException("The coupon does not belong to this company");
 		}
+		coupon.setId(couponDB.getId());
+		coupon.setCompany(couponDB.getCompany());
+		update(coupon);
 	}
 
 	/**
@@ -107,10 +123,11 @@ public class CompanyServiceImpl extends ClientServiceImpl implements CompanyServ
 	 * @return All coupons associated with the client.
 	 * @throws CouponsSystemException when get all client coupons fails.
 	 */
+	@Override
 	public ArrayList<Coupon> getCoupons() throws CouponsSystemException {
 		return getAll(couponsReposetory.findByCompanyId(companyId), "company coupons");
 	}
-	
+
 	/**
 	 * get of all coupons from a particular category associated with the client by
 	 * ID.
@@ -119,6 +136,7 @@ public class CompanyServiceImpl extends ClientServiceImpl implements CompanyServ
 	 * @return All category coupons associated with the client.
 	 * @throws CouponsSystemException when get all client category coupons fails.
 	 */
+	@Override
 	public ArrayList<Coupon> getCoupons(Category category) throws CouponsSystemException {
 		return getAll(couponsReposetory.findByCompanyIdAndCategory(companyId, category), "company coupons");
 	}
@@ -131,6 +149,7 @@ public class CompanyServiceImpl extends ClientServiceImpl implements CompanyServ
 	 * @throws CouponsSystemException when get all client maximum price coupons
 	 *                                fails.
 	 */
+	@Override
 	public ArrayList<Coupon> getCoupons(Double maxPrice) throws CouponsSystemException {
 		return getAll(couponsReposetory.findByCompanyIdAndPriceLessThan(companyId, maxPrice),
 				"company coupons maxPrice " + maxPrice);
@@ -148,6 +167,7 @@ public class CompanyServiceImpl extends ClientServiceImpl implements CompanyServ
 	 *                                <li>delete coupon and it's purchases failed.
 	 *                                <li>the company dose not exists.
 	 */
+	@Override
 	public void deleteCoupon(int couponID) throws CouponsSystemException {
 		delete(couponsReposetory, couponID, "coupon");
 	}
@@ -158,6 +178,7 @@ public class CompanyServiceImpl extends ClientServiceImpl implements CompanyServ
 	 * @return this company
 	 * @throws CouponsSystemException when get company details fails.
 	 */
+	@Override
 	public Company getDetails() throws CouponsSystemException {
 		return get(companiesReposetory.findById(companyId), "company details");
 	}

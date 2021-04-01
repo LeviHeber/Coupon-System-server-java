@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import couponsSystem.core.entites.Company;
 import couponsSystem.core.entites.Customer;
 import couponsSystem.core.exception.CouponsSystemException;
@@ -165,9 +166,10 @@ public class AdminController extends ClientController<AdminService> {
 	 *                                failed.
 	 *                                <li>the customer dose not exists.
 	 */
-	@DeleteMapping("customer/{companyID}")
+	@DeleteMapping("customer/{customerID}")
 	public ResponseEntity<?> deleteCustomer(@RequestHeader String token, @PathVariable int customerID)
 			throws CouponsSystemException {
+		getService(token).deleteCustomer(customerID);
 		return okResponse();
 	}
 
